@@ -1,94 +1,48 @@
+var x = 0;
+var direction = 1;
+var mySound;
+var analyzer;
 
-/**
- * Setup the sketch
- */
+function preload() {
+  // we have included both an .ogg file and an .mp3 file
+  soundFormats('ogg', 'mp3');
+
+  // if mp3 is not supported by this browser,
+  // loadSound will load the ogg file
+  // we have included with our sketch
+  mySound = loadSound('Turtle.mp3');
+}
+
 function setup() {
-	createCanvas(windowWidth, windowHeight);
+createCanvas(windowWidth,windowHeight);
+mySound.setVolume(0.1);
+mySound.play();
+analyzer = new p5.Amplitude();
+analyzer.setInput(mySound);
 }
 
-/**
- * Main animation loop
- */
-function draw() {
-	// set background to black
-	background(0);
-	// 2px lines
-	strokeWeight(2);
+function draw(){
+  var rms = analyzer.getLevel() * 10000;
+  background(255);
+  noStroke();
 
-	//
-	// seconds
-	//
+  fill("lightblue");
+  var growing = rms + height/2;
 
-	// first draw grey outline
-	noFill();
-	stroke(50);
-	ellipse(width/4, height/2, 120, 120);
+  rect(0,height-growing,width,growing);
 
-	// now draw circle based on current second
-	noStroke();
-	fill(255, 0, 0);
-	ellipse(width/4, height/2, second()*2, second()*2);
+fill(0,255,0);
+ x = x + direction;
+ if(x>width || x < 0 ) {
+ direction = direction * -1; }
 
-	//
-	// minutes
-	//
+    arc(x+240, 326, 200, 200, PI, TWO_PI);
+    arc(x-240, 325, 200, 200, TWO_PI, PI*.5)
+    arc(x+40, 325, 200, 200, TWO_PI, PI*.5) // x (horizontal location), y (vertical location), width, height, arc, arc
+fill(0,147,68);
+arc(x, 326, 280, 280, PI, TWO_PI); // first two numbers change position
 
-	// first draw grey outline
-	noFill();
-	stroke(50);
-	ellipse(2*width/4, height/2, 120, 120);
-
-	// now draw circle based on current minute
-	noStroke();
-	fill(0, 255, 0);
-	ellipse(2*width/4, height/2, minute()*2, minute()*2);
-
-	//
-	// hours
-	//
-
-	// first draw grey outline
-	noFill();
-	stroke(50);
-	ellipse(3*width/4, height/2, 120, 120);
-
-	// now draw circle based on current minute
-	noStroke();
-	fill(0, 0, 255);
-	ellipse(3*width/4, height/2, hour()*10, hour()*10);
-
-
-	// text time display
-
-	fill(255);
-	textSize(50);
-	textAlign(CENTER);
-
-	var hourText = hour();
-	var minuteText = setDigits(minute(), 2);
-	var secondText = setDigits(second(), 2);
-
-	text(hourText+':'+minuteText+':'+secondText, width/2, height/3);
-
-}
-
-
-function windowResized() {
-	resizeCanvas(windowWidth, windowHeight);
-}
-
-/**
- * This function will make sure a number is
- * the desired number of digits. For example,
- * if `number = 1` and `digits = 2` than the
- * output will be the string `01` 
- */
-function setDigits(number, digits) {
-	var str = number+'';
-
-	while(str.length < digits) {
-		str = '0'+str;
-	}
-
-	return str
+console.log("Analyzer: " + rms);
+console.log("Current Second: " + second());
+console.log("Current Minute: " + minute());
 }
